@@ -1,0 +1,1209 @@
+// main projection code
+
+#include <windows.h>
+#include <GL/glut.h>
+#include <stdlib.h>
+#include <iostream>
+using namespace std;
+
+GLfloat ex = 0.0, ey = 0.0, ez = -3.0;
+
+void init()
+{
+        glEnable(GL_DEPTH_TEST);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+
+        //glFrustum(-4.0, 4.0, -4.0, 4.0, 1.0, 10.0);
+        glOrtho(-4.0, 4.0, -4.0,  4.0, 1.0, 10.0);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        gluLookAt(ex, ey, ez,  0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+}
+
+GLfloat vertices[8][3]={
+    {-1.0, -1.0, 1.0},     {-1.0, 1.0, 1.0},    {1.0, 1.0, 1.0},
+    {1.0, -1.0, 1.0},    {-1.0, -1.0, -1.0},     {-1.0, 1.0, -1.0},
+    {1.0, 1.0, -1.0},    {1.0, -1.0, -1.0}
+};
+
+GLfloat colors[8][3]={
+    {0.0, 0.0, 0.0},{1.0, 0.0, 0.0},
+    {1.0, 1.0, 0.0},{0.0, 1.0, 0.0},
+    {0.0, 0.0, 1.0},{1.0, 0.0, 1.0},
+    {1.0, 1.0, 1.0},{0.0, 1.0, 1.0}
+};
+
+void quad(int a, int b, int c, int d)
+{
+    glBegin(GL_QUADS);
+        glVertex3fv(vertices[a]);
+        glVertex3fv(vertices[b]);
+        glVertex3fv(vertices[c]);
+        glVertex3fv(vertices[d]);
+    glEnd();
+}
+void mydraw()
+{
+    glColor3f(1.0, 0.0, 0.0);
+    glColor3fv(colors[0]);     quad(0, 3, 2, 1);
+    glColor3fv(colors[1]);     quad(2, 3, 7, 6);
+    glColor3fv(colors[2]);     quad(0, 4, 7, 3);
+    glColor3fv(colors[3]);     quad(1, 2, 6, 5);
+    glColor3fv(colors[4]);     quad(4, 5, 6, 7);
+    glColor3fv(colors[5]);     quad(0, 1, 5, 4);
+}
+void drawObject()
+{
+    glColor3f(0.7, 0.0, 0.50);
+    glutWireDodecahedron();
+    glTranslated(2, 2,0);
+    glutSolidTorus(0.5, 1, 4, 20);
+    glutWireTorus(3, 5, 25, 25);
+    glColor3f(0.7, 0.7, 0);
+    glutWireSphere(2, 16, 16);
+    glColor3f(0.0, 1.0, 1.0);
+    glTranslatef(-2.0, 1.0, 0);
+    glutWireTorus(0.5, 1, 30, 30);
+    glutWireTeapot(2.0);
+    glScalef(3.5, 3.5, 3.50);
+    glutWireCube(2.0);
+    glutWireTetrahedron();
+
+    glutWireOctahedron();
+//   glBegin();
+ //  glEnd();
+
+}
+
+void scene() {
+    // Set initial position and rotation
+    glPushMatrix();
+    glTranslatef(0.0, 0.0, -5.0);  // Move back 5 units
+
+    // Draw a cone at origin
+    glColor3f(1.0, 0.0, 0.0);
+    glutSolidCone(1.0, 2.0, 20, 20);
+
+    // Draw a sphere to the right of the cone
+    glTranslatef(3.0, 0.0, 0.0);
+    glColor3f(0.0, 0.0, 1.0);
+    glutSolidSphere(1.0, 20, 20);
+
+    glPopMatrix();
+}
+
+void resize(int width, int height)
+{
+    double aspect;
+    glViewport(0, 0, width, height);
+    aspect = (double) width / (double) height;
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    cout << "aspect ratio" << aspect;
+    if (aspect < 1.0)
+    {
+        glOrtho(-4., 4., -4./aspect, 4./aspect, 1., 100.);
+    }
+    else
+    {
+        glOrtho(-4.*aspect, 4.*aspect, -4., 4., 1., 100.);
+    }
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(0., 0., 5., 0., 0., 0., 0., 1., 0.);
+
+}
+
+void display(void)
+{
+    glClearColor(0.0f, 0.0f, 0.0, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    mydraw();
+    //drawObject();
+    //scene();
+    glutSwapBuffers();
+}
+
+
+static void key(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+        case 27 :
+        case 'q':
+            exit(0);
+            break;
+
+        case '+':
+            cout << "+" << "Pressed ";
+            ez += 1.0;
+            break;
+
+        case '-':
+            cout << "+" << "Pressed ";
+            ez -= 1.0;
+            break;
+    }
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(ex, ey, ez,  0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    glutPostRedisplay();
+
+}
+
+
+static void arrowKey(int key, int x, int y)
+{
+    cout << key << "pressed\n";
+    switch(key)
+    {
+        case GLUT_KEY_LEFT:
+            cout << "GLUT_KEY_LEFT" << "Pressed ";
+            ex -= 1.0;
+            break;
+
+        case GLUT_KEY_RIGHT:
+            cout << "GLUT_KEY_RIGHT" << "Pressed ";
+            ex += 1.0;
+            break;
+
+        case GLUT_KEY_UP:
+            cout << "GLUT_KEY_UP" << "Pressed ";
+            ey -= 1.0;
+            break;
+
+       case GLUT_KEY_DOWN:
+            cout << "GLUT_KEY_DOWN" << "Pressed ";
+            ey += 1.0;
+            break;
+
+    }
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(ex, ey, ez,  0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    glutPostRedisplay();
+}
+
+
+
+static void idle(void)
+{
+    glutPostRedisplay();
+}
+
+
+int main(int argc, char *argv[])
+{
+    glutInit(&argc, argv);
+    glutInitWindowSize(640,480);
+    glutInitWindowPosition(10,10);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+
+    glutCreateWindow("3D Projection");
+
+    glutReshapeFunc(resize);
+    glutDisplayFunc(display);
+    glutKeyboardFunc(key);
+    glutSpecialFunc(arrowKey);
+    //glutIdleFunc(idle);
+
+    init();
+
+
+    glutMainLoop();
+
+    return EXIT_SUCCESS;
+}
+
+
+
+########################################################################################################
+
+
+// projection CAR
+
+#include <windows.h>
+#include <GL/glut.h>
+#include <stdlib.h>
+#include <iostream>
+using namespace std;
+
+GLfloat ex = 0.0, ey = 0.0, ez = -3.0;
+
+void init()
+{
+    glEnable(GL_DEPTH_TEST);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-4.0, 4.0, -4.0, 4.0, 1.0, 10.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(ex, ey, ez,  0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+}
+
+GLfloat vertices[8][3] = {
+    {-1.0, -1.0, 1.0}, {-1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}, {1.0, -1.0, 1.0},
+    {-1.0, -1.0, -1.0}, {-1.0, 1.0, -1.0}, {1.0, 1.0, -1.0}, {1.0, -1.0, -1.0}
+};
+
+GLfloat colors[8][3] = {
+    {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {1.0, 1.0, 0.0}, {0.0, 1.0, 0.0},
+    {0.0, 0.0, 1.0}, {1.0, 0.0, 1.0}, {1.0, 1.0, 1.0}, {0.0, 1.0, 1.0}
+};
+
+void quad(int a, int b, int c, int d)
+{
+    glBegin(GL_QUADS);
+    glVertex3fv(vertices[a]);
+    glVertex3fv(vertices[b]);
+    glVertex3fv(vertices[c]);
+    glVertex3fv(vertices[d]);
+    glEnd();
+}
+
+void drawCar()
+{
+    // Body
+    glColor3f(1.0, 0.0, 0.0); // Red color for the body
+    glPushMatrix();
+    glTranslatef(0.0, -1.0, 0.0);
+    glScalef(2.0, 1.0, 1.0); // Width, Height, Depth
+    glutWireCube(1.0);
+    glPopMatrix();
+
+    // Roof
+    glColor3f(0.0, 0.0, 1.0); // Blue color for the roof
+    glPushMatrix();
+    glTranslatef(0.0, -0.3, 0.0);
+    glScalef(1.5, 0.8, 1.0); // Width, Height, Depth
+    glutWireCube(1.0);
+    glPopMatrix();
+
+    // Wheels
+    glColor3f(0.0, 1.0, 0.0); // Green color for the wheels
+    glPushMatrix();
+    glTranslatef(-0.75, -1.5, 0.6); // Front left wheel
+    glutWireSphere(0.25, 20, 20);
+    glTranslatef(1.5, 0.0, 0.0); // Front right wheel
+    glutWireSphere(0.25, 20, 20);
+    glTranslatef(0.0, 0.0, -1.2); // Rear right wheel
+    glutWireSphere(0.25, 20, 20);
+    glTranslatef(-1.5, 0.0, 0.0); // Rear left wheel
+    glutWireSphere(0.25, 20, 20);
+    glPopMatrix();
+}
+
+void display(void)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+    gluLookAt(ex, ey, ez,  0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    drawCar();
+    glutSwapBuffers();
+}
+
+static void key(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+        case 27 :
+        case 'q':
+            exit(0);
+            break;
+
+        case '+':
+            ez += 1.0;
+            break;
+
+        case '-':
+            ez -= 1.0;
+            break;
+    }
+    glutPostRedisplay();
+}
+
+static void arrowKey(int key, int x, int y)
+{
+    switch(key)
+    {
+        case GLUT_KEY_LEFT:
+            ex -= 0.1;
+            break;
+
+        case GLUT_KEY_RIGHT:
+            ex += 0.1;
+            break;
+
+        case GLUT_KEY_UP:
+            ey += 0.1;
+            break;
+
+        case GLUT_KEY_DOWN:
+            ey -= 0.1;
+            break;
+    }
+    glutPostRedisplay();
+}
+
+void resize(int width, int height)
+{
+    glViewport(0, 0, width, height);
+    double aspect = (double) width / (double) height;
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    if (aspect < 1.0)
+        glOrtho(-4., 4., -4. / aspect, 4. / aspect, 1., 100.);
+    else
+        glOrtho(-4. * aspect, 4. * aspect, -4., 4., 1., 100.);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(0., 0., 5., 0., 0., 0., 0., 1., 0.);
+}
+
+int main(int argc, char *argv[])
+{
+    glutInit(&argc, argv);
+    glutInitWindowSize(640, 480);
+    glutInitWindowPosition(10, 10);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+    glutCreateWindow("3D Car");
+
+    glutReshapeFunc(resize);
+    glutDisplayFunc(display);
+    glutKeyboardFunc(key);
+    glutSpecialFunc(arrowKey);
+
+    init();
+
+    glutMainLoop();
+
+    return EXIT_SUCCESS;
+}
+
+
+##############################################################################################
+
+PROJECTION CAR 2
+
+#include <windows.h>
+
+#include <GL/glut.h>
+#include <stdlib.h>
+
+// Define the camera position
+GLfloat ex = 0.0, ey = 1.0, ez = 5.0;
+
+// Function to initialize the OpenGL settings
+void init()
+{
+    glEnable(GL_DEPTH_TEST); // Enable depth testing
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, 1.0, 1.0, 100.0); // Set perspective projection
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+// Function to draw the car
+void drawCar()
+{
+    // Set the color for the car body
+    glColor3f(0.0, 0.0, 1.0); // Blue color
+
+    // Draw the car body as a box
+    glPushMatrix();
+    glTranslatef(0.0, 0.5, 0.0); // Translate the car body up
+    glScalef(2.0, 0.5, 1.0); // Scale the car body
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    // Draw the car roof as a box
+    glColor3f(1.0,0.0,0.0);
+    glPushMatrix();
+    glTranslatef(0.0, 1.0, 0.0); // Translate the roof up
+    glScalef(1.0, 0.5, 1.0); // Scale the roof
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    // Draw the wheels as spheres
+    glColor3f(1.0, 1.0, 1.0); // Black color
+    glPushMatrix();
+    glTranslatef(-0.8, 0.1, 0.5); // Front left wheel
+    glutSolidSphere(0.2, 20, 20);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.8, 0.1, 0.5); // Front right wheel
+    glutSolidSphere(0.2, 20, 20);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-0.8, 0.1, -0.5); // Back left wheel
+    glutSolidSphere(0.2, 20, 20);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.8, 0.1, -0.5); // Back right wheel
+    glutSolidSphere(0.2, 20, 20);
+    glPopMatrix();
+}
+
+// Display function to render the scene
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+    gluLookAt(ex, ey, ez, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    drawCar();
+    glutSwapBuffers();
+}
+
+// Reshape function to handle window resizing
+void reshape(int width, int height)
+{
+    glViewport(0, 0, width, height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, (GLfloat)width / (GLfloat)height, 1.0, 100.0);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+// Keyboard function to handle input
+void keyboard(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+    case 27: // ESC key
+        exit(0);
+        break;
+    case '+':
+        ez -= 0.5; // Move the camera closer
+        break;
+    case '-':
+        ez += 0.5; // Move the camera further
+        break;
+    default:
+        break;
+    }
+    glutPostRedisplay(); // Redraw the scene
+}
+
+// Arrow key function to handle special keys
+void specialKeys(int key, int x, int y)
+{
+    switch (key)
+    {
+    case GLUT_KEY_LEFT:
+        ex -= 0.2; // Move the camera left
+        break;
+    case GLUT_KEY_RIGHT:
+        ex += 0.2; // Move the camera right
+        break;
+    case GLUT_KEY_UP:
+        ey += 0.2; // Move the camera up
+        break;
+    case GLUT_KEY_DOWN:
+        ey -= 0.2; // Move the camera down
+        break;
+    }
+    glutPostRedisplay(); // Redraw the scene
+}
+
+// Main function
+int main(int argc, char *argv[])
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(640, 480);
+    glutInitWindowPosition(10, 10);
+    glutCreateWindow("3D Car Projection");
+
+    init();
+
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(specialKeys);
+
+    glutMainLoop();
+
+    return 0;
+}
+
+
+
+#################################################################################################
+
+
+// projection House
+
+#include <windows.h>
+#include <GL/glut.h>
+#include <stdlib.h>
+#include <iostream>
+using namespace std;
+
+GLfloat ex = -1.0, ey = 0.0, ez = -3.0;
+
+void init()
+{
+    glEnable(GL_DEPTH_TEST);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-4.0, 4.0, -4.0, 4.0, 1.0, 10.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(ex, ey, ez,  0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+}
+
+GLfloat vertices[8][3] = {
+    {-1.0, -1.0, 1.0}, {-1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}, {1.0, -1.0, 1.0},
+    {-1.0, -1.0, -1.0}, {-1.0, 1.0, -1.0}, {1.0, 1.0, -1.0}, {1.0, -1.0, -1.0}
+};
+
+GLfloat colors[8][3] = {
+    {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {1.0, 1.0, 0.0}, {0.0, 1.0, 0.0},
+    {0.0, 0.0, 1.0}, {1.0, 0.0, 1.0}, {1.0, 1.0, 1.0}, {0.0, 1.0, 1.0}
+};
+
+void quad(int a, int b, int c, int d)
+{
+    glBegin(GL_QUADS);
+    glVertex3fv(vertices[a]);
+    glVertex3fv(vertices[b]);
+    glVertex3fv(vertices[c]);
+    glVertex3fv(vertices[d]);
+    glEnd();
+}
+
+void drawHouse()
+{
+    // Front Wall (Red)
+    glColor3f(1.0, 0.0, 0.0); // Red
+    quad(0, 1, 2, 3);
+
+    // Back Wall (Green)
+    glColor3f(0.0, 1.0, 0.0); // Green
+    quad(4, 5, 6, 7);
+
+    // Left Wall (Blue)
+    glColor3f(0.0, 0.0, 1.0); // Blue
+    quad(0, 4, 7, 3);
+
+    // Right Wall (Yellow)
+    glColor3f(1.0, 1.0, 0.0); // Yellow
+    quad(1, 2, 6, 5);
+
+    // Roof (Cyan) - Two triangles to form the roof
+    glColor3f(0.0, 1.0, 1.0); // Cyan
+    glBegin(GL_TRIANGLES);
+        // First triangle
+        glVertex3f(-1.0, 1.0, 1.0); // Top of front wall
+        glVertex3f(1.0, 1.0, 1.0); // Top of back wall
+        glVertex3f(0.0, 2.0, 0.0); // Peak of roof
+
+        // Second triangle
+        glVertex3f(-1.0, 1.0, -1.0); // Top of back wall
+        glVertex3f(1.0, 1.0, -1.0); // Top of front wall
+        glVertex3f(0.0, 2.0, 0.0); // Peak of roof
+    glEnd();
+
+    // Door (Orange)
+    glColor3f(1.0, 0.5, 0.0); // Orange
+    glPushMatrix();
+    glTranslatef(0.0, -0.5, 1.001); // Positioning the door
+    glScalef(0.5, 1.0, 0.01); // Scaling the door
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    // Windows (Gray)
+    glColor3f(0.5, 0.5, 0.5); // Gray
+    glPushMatrix();
+    glTranslatef(-0.5, 0.5, 1.001); // Left window
+    glScalef(0.3, 0.3, 0.01); // Scaling the window
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.5, 0.5, 1.001); // Right window
+    glScalef(0.3, 0.3, 0.01); // Scaling the window
+    glutSolidCube(1.0);
+    glPopMatrix();
+}
+
+
+void display(void)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+    gluLookAt(ex, ey, ez,  0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    drawHouse();
+    glutSwapBuffers();
+}
+
+static void key(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+        case 27 :
+        case 'q':
+            exit(0);
+            break;
+
+        case '+':
+            ez += 1.0;
+            break;
+
+        case '-':
+            ez -= 1.0;
+            break;
+    }
+    glutPostRedisplay();
+}
+
+static void arrowKey(int key, int x, int y)
+{
+    switch(key)
+    {
+        case GLUT_KEY_LEFT:
+            ex -= 0.1;
+            break;
+
+        case GLUT_KEY_RIGHT:
+            ex += 0.1;
+            break;
+
+        case GLUT_KEY_UP:
+            ey += 0.1;
+            break;
+
+        case GLUT_KEY_DOWN:
+            ey -= 0.1;
+            break;
+    }
+    glutPostRedisplay();
+}
+
+void resize(int width, int height)
+{
+    glViewport(0, 0, width, height);
+    double aspect = (double) width / (double) height;
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    if (aspect < 1.0)
+        glOrtho(-4., 4., -4. / aspect, 4. / aspect, 1., 100.);
+    else
+        glOrtho(-4. * aspect, 4. * aspect, -4., 4., 1., 100.);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(0., 0., 5., 0., 0., 0., 0., 1., 0.);
+}
+
+int main(int argc, char *argv[])
+{
+    glutInit(&argc, argv);
+    glutInitWindowSize(640, 480);
+    glutInitWindowPosition(10, 10);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+    glutCreateWindow("3D House");
+
+    glutReshapeFunc(resize);
+    glutDisplayFunc(display);
+    glutKeyboardFunc(key);
+    glutSpecialFunc(arrowKey);
+
+    init();
+
+    glutMainLoop();
+
+    return EXIT_SUCCESS;
+}
+
+
+############################################################################################
+
+
+Projection house 2::
+
+
+#include <windows.h>
+
+#include <GL/glut.h>
+#include <stdlib.h>
+
+// Define the camera position
+GLfloat ex = 0.0, ey = 1.0, ez = 5.0;
+
+// Function to initialize the OpenGL settings
+void init()
+{
+    glEnable(GL_DEPTH_TEST); // Enable depth testing
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, 1.0, 1.0, 100.0); // Set perspective projection
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+// Function to draw the house
+void drawHouse()
+{
+    // Draw the base of the house (a cube)
+    glColor3f(0.7, 0.5, 0.3); // Brown color
+    glPushMatrix();
+    glTranslatef(0.0, -0.5, 0.0); // Translate the base down
+    glScalef(3.0, 1.0, 2.0); // Scale the base
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    // Draw the roof (a pyramid)
+    glColor3f(1.0, 0.0, 0.0); // Red color
+    glPushMatrix();
+    glTranslatef(0.0, 0.5, 0.0); // Translate the roof up
+    glBegin(GL_TRIANGLES);
+    // Front face
+    glVertex3f(0.0, 1.0, 0.0);
+    glVertex3f(-1.5, 0.5, 1.0);
+    glVertex3f(1.5, 0.5, 1.0);
+    // Back face
+    glVertex3f(0.0, 1.0, 0.0);
+    glVertex3f(-1.5, 0.5, -1.0);
+    glVertex3f(1.5, 0.5, -1.0);
+    // Left face
+    glVertex3f(0.0, 1.0, 0.0);
+    glVertex3f(-1.5, 0.5, -1.0);
+    glVertex3f(-1.5, 0.5, 1.0);
+    // Right face
+    glVertex3f(0.0, 1.0, 0.0);
+    glVertex3f(1.5, 0.5, -1.0);
+    glVertex3f(1.5, 0.5, 1.0);
+    glEnd();
+    glPopMatrix();
+
+    // Draw the door (a rectangle)
+    glColor3f(0.6, 0.3, 0.0); // Dark brown color
+    glPushMatrix();
+    glTranslatef(0.0, -0.5, 1.001); // Position the door
+    glScalef(0.3, 0.6, 0.05); // Width, height, depth
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    // Draw windows (rectangles)
+    glColor3f(0.0, 0.8, 1.0); // Light blue color
+    // Left window
+    glPushMatrix();
+    glTranslatef(-0.8, 0.0, 1.001); // Position the window
+    glScalef(0.4, 0.4, 0.05); // Width, height, depth
+    glutSolidCube(1.0);
+    glPopMatrix();
+    // Right window
+    glPushMatrix();
+    glTranslatef(0.8, 0.0, 1.001); // Position the window
+    glScalef(0.4, 0.4, 0.05); // Width, height, depth
+    glutSolidCube(1.0);
+    glPopMatrix();
+}
+
+// Display function to render the scene
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+    gluLookAt(ex, ey, ez, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    drawHouse();
+    glutSwapBuffers();
+}
+
+// Reshape function to handle window resizing
+void reshape(int width, int height)
+{
+    glViewport(0, 0, width, height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, (GLfloat)width / (GLfloat)height, 1.0, 100.0);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+// Keyboard function to handle input
+void keyboard(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+    case 27: // ESC key
+        exit(0);
+        break;
+    case '+':
+        ez -= 0.5; // Move the camera closer
+        break;
+    case '-':
+        ez += 0.5; // Move the camera further
+        break;
+    default:
+        break;
+    }
+    glutPostRedisplay(); // Redraw the scene
+}
+
+// Arrow key function to handle special keys
+void specialKeys(int key, int x, int y)
+{
+    switch (key)
+    {
+    case GLUT_KEY_LEFT:
+        ex -= 0.2; // Move the camera left
+        break;
+    case GLUT_KEY_RIGHT:
+        ex += 0.2; // Move the camera right
+        break;
+    case GLUT_KEY_UP:
+        ey += 0.2; // Move the camera up
+        break;
+    case GLUT_KEY_DOWN:
+        ey -= 0.2; // Move the camera down
+        break;
+    }
+    glutPostRedisplay(); // Redraw the scene
+}
+
+// Main function
+int main(int argc, char *argv[])
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(640, 480);
+    glutInitWindowPosition(10, 10);
+    glutCreateWindow("3D House Projection");
+
+    init();
+
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(specialKeys);
+
+    glutMainLoop();
+
+    return 0;
+}
+
+#######################################################################################
+
+SATELLITE:
+
+
+
+#include <windows.h>
+#include <GL/glut.h>
+#include <stdlib.h>
+
+// Define the camera position
+GLfloat ex = 0.0, ey = 1.5, ez = 10.0;
+
+// Function to initialize the OpenGL settings
+void init()
+{
+    glEnable(GL_DEPTH_TEST); // Enable depth testing
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, 1.0, 1.0, 100.0); // Set perspective projection
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+// Function to draw the aircraft
+void drawAircraft()
+{
+    // Draw the fuselage (a cylinder)
+    glColor3f(0.5, 0.5, 0.5); // Gray color
+    glPushMatrix();
+    glTranslatef(0.0, 0.0, 0.0); // Position the fuselage
+    glRotatef(90, 1.0, 0.0, 0.0); // Rotate the fuselage to align with the Z-axis
+    GLUquadric* quad = gluNewQuadric();
+    gluCylinder(quad, 0.5, 0.5, 3.0, 32, 32);
+    gluDeleteQuadric(quad);
+    glPopMatrix();
+
+    // Draw the wings (rectangles)
+    glColor3f(0.0, 0.8, 0.0); // Green color
+    glPushMatrix();
+    glTranslatef(0.0, 0.0, -0.5); // Position the wings
+    glScalef(4.0, 0.1, 0.5); // Width, height, depth
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    // Draw the tail (a vertical rectangle)
+    glColor3f(1.0, 0.0, 0.0); // Red color
+    glPushMatrix();
+    glTranslatef(0.0, 0.75, -1.5); // Position the tail
+    glScalef(0.5, 1.0, 0.1); // Width, height, depth
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    // Draw the cockpit (a sphere)
+    glColor3f(0.0, 0.0, 1.0); // Blue color
+    glPushMatrix();
+    glTranslatef(0.0, 0.2, 1.0); // Position the cockpit
+    glutSolidSphere(0.3, 32, 32);
+    glPopMatrix();
+}
+
+// Display function to render the scene
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+    gluLookAt(ex, ey, ez, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    drawAircraft();
+    glutSwapBuffers();
+}
+
+// Reshape function to handle window resizing
+void reshape(int width, int height)
+{
+    glViewport(0, 0, width, height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, (GLfloat)width / (GLfloat)height, 1.0, 100.0);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+// Keyboard function to handle input
+void keyboard(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+    case 27: // ESC key
+        exit(0);
+        break;
+    case '+':
+        ez -= 0.5; // Move the camera closer
+        break;
+    case '-':
+        ez += 0.5; // Move the camera further
+        break;
+    default:
+        break;
+    }
+    glutPostRedisplay(); // Redraw the scene
+}
+
+// Arrow key function to handle special keys
+void specialKeys(int key, int x, int y)
+{
+    switch (key)
+    {
+    case GLUT_KEY_LEFT:
+        ex -= 0.2; // Move the camera left
+        break;
+    case GLUT_KEY_RIGHT:
+        ex += 0.2; // Move the camera right
+        break;
+    case GLUT_KEY_UP:
+        ey += 0.2; // Move the camera up
+        break;
+    case GLUT_KEY_DOWN:
+        ey -= 0.2; // Move the camera down
+        break;
+    }
+    glutPostRedisplay(); // Redraw the scene
+}
+
+// Main function
+int main(int argc, char *argv[])
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(640, 480);
+    glutInitWindowPosition(10, 10);
+    glutCreateWindow("3D Aircraft Projection");
+
+    init();
+
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(specialKeys);
+
+    glutMainLoop();
+
+    return 0;
+}
+
+
+###############################################################################################3
+
+3d aeroplane
+
+
+#include <windows.h>
+
+#include <GL/glut.h>
+
+// Define the camera position
+GLfloat ex = 5.0, ey = 5.0, ez = 10.0;
+
+// Lighting and material properties
+GLfloat lightPosition[] = {1.0, 1.0, 1.0, 0.0}; // Light position
+GLfloat whiteLight[] = {1.0, 1.0, 1.0, 1.0}; // White light
+GLfloat matSpecular[] = {1.0, 1.0, 1.0, 1.0}; // Specular reflection
+GLfloat matShininess[] = {50.0}; // Shininess
+
+// Initialize OpenGL settings
+void init() {
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteLight);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, whiteLight);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, matSpecular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, matShininess);
+    glClearColor(0.0, 0.0, 0.0, 1.0); // Black background
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, 1.0, 1.0, 100.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(ex, ey, ez, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+}
+
+// Function to draw a beautiful airplane
+void drawAirplane() {
+    // Draw the fuselage (a cylinder)
+    glColor3f(0.7, 0.7, 0.7); // Light gray color
+    glPushMatrix();
+    GLUquadric* quad = gluNewQuadric();
+    glTranslatef(0.0, 0.0, 0.0); // Position the fuselage
+    glRotatef(90, 1.0, 0.0, 0.0); // Rotate the fuselage to align with the Z-axis
+    gluCylinder(quad, 0.5, 0.5, 4.0, 32, 32);
+    gluDeleteQuadric(quad);
+    glPopMatrix();
+
+    // Draw the wings (rectangles)
+    glColor3f(0.0, 0.7, 0.0); // Green color
+    glPushMatrix();
+    glTranslatef(0.0, -0.5, 0.0); // Position the wings
+    glScalef(6.0, 0.1, 1.5); // Width, height, depth
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    // Draw the tail (vertical stabilizer and horizontal stabilizer)
+    glColor3f(0.7, 0.0, 0.0); // Red color
+    glPushMatrix();
+    glTranslatef(0.0, 1.5, -2.0); // Position the vertical stabilizer
+    glScalef(0.5, 2.0, 0.1); // Width, height, depth
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    glColor3f(0.7, 0.0, 0.0); // Red color
+    glPushMatrix();
+    glTranslatef(0.0, 0.0, -3.0); // Position the horizontal stabilizer
+    glScalef(3.0, 0.1, 0.5); // Width, height, depth
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    // Draw the engines (cylinders)
+    glColor3f(0.5, 0.5, 0.5); // Gray color
+    glPushMatrix();
+    glTranslatef(-2.0, -0.5, -0.5); // Position the left engine
+    glRotatef(90, 0.0, 1.0, 0.0); // Rotate the engine to align with the Z-axis
+    gluCylinder(quad, 0.2, 0.2, 1.0, 32, 32);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(2.0, -0.5, -0.5); // Position the right engine
+    glRotatef(90, 0.0, 1.0, 0.0); // Rotate the engine to align with the Z-axis
+    gluCylinder(quad, 0.2, 0.2, 1.0, 32, 32);
+    glPopMatrix();
+
+    // Draw the cockpit (a sphere)
+    glColor3f(0.0, 0.0, 0.7); // Dark blue color
+    glPushMatrix();
+    glTranslatef(0.0, 0.4, 2.0); // Position the cockpit
+    glutSolidSphere(0.3, 32, 32);
+    glPopMatrix();
+}
+
+// Display function to render the scene
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+    gluLookAt(ex, ey, ez, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    drawAirplane();
+    glutSwapBuffers();
+}
+
+// Reshape function to handle window resizing
+void reshape(int width, int height)
+{
+    glViewport(0, 0, width, height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, (GLfloat)width / (GLfloat)height, 1.0, 100.0);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+// Keyboard function to handle input
+void keyboard(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+    case 27: // ESC key
+        exit(0);
+        break;
+    case '+':
+        ez -= 0.5; // Move the camera closer
+        break;
+    case '-':
+        ez += 0.5; // Move the camera further
+        break;
+    default:
+        break;
+    }
+    glutPostRedisplay(); // Redraw the scene
+}
+
+// Arrow key function to handle special keys
+void specialKeys(int key, int x, int y)
+{
+    switch (key)
+    {
+    case GLUT_KEY_LEFT:
+        ex -= 0.2; // Move the camera left
+        break;
+    case GLUT_KEY_RIGHT:
+        ex += 0.2; // Move the camera right
+        break;
+    case GLUT_KEY_UP:
+        ey += 0.2; // Move the camera up
+        break;
+    case GLUT_KEY_DOWN:
+        ey -= 0.2; // Move the camera down
+        break;
+    }
+    glutPostRedisplay(); // Redraw the scene
+}
+
+// Main function
+int main(int argc, char *argv[])
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(640, 480);
+    glutInitWindowPosition(10, 10);
+    glutCreateWindow("3D Airplane Projection");
+
+    init();
+
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(specialKeys);
+
+    glutMainLoop();
+
+    return 0;
+}
