@@ -1,6 +1,6 @@
 
 '''
-LOAD AND DISPLAY
+#LOAD AND DISPLAY
 
 from PIL import Image
 
@@ -17,7 +17,7 @@ image.show()
 
 
 '''
-CREATE RANDOM ARRAY AND STORE
+#CREATE RANDOM ARRAY AND STORE
 
 import numpy as np
 from PIL import Image
@@ -49,7 +49,7 @@ print(f'Random image saved at {image_path}')
 
 
 '''
-RESIZING AN IMAGE
+#RESIZING AN IMAGE
 
 from PIL import Image
 
@@ -79,7 +79,7 @@ print(f'Resized image saved at {resized_image_path}')
 
 '''
 
-ROTATING AN IMAGE
+#ROTATING AN IMAGE
 
 from PIL import Image
 
@@ -107,7 +107,7 @@ print(f'Rotated image saved at {rotated_image_path}')
 
 
 '''
-UNIFORM QUANTIZATION 4 8 16 32 64
+#UNIFORM QUANTIZATION 4 8 16 32 64
 
 import numpy as np
 from PIL import Image
@@ -175,7 +175,7 @@ plt.show()
 
 '''
 
-GENERATE HISTOGRAM FOR ANY IMAGE AND DISPLAY
+#GENERATE HISTOGRAM FOR ANY IMAGE AND DISPLAY
 
 import numpy as np
 from PIL import Image
@@ -216,7 +216,7 @@ plt.show()
 
 '''
 
-HISTOGRAM EQUALIZATION
+#HISTOGRAM EQUALIZATION
 
 import numpy as np
 from PIL import Image
@@ -294,14 +294,106 @@ plt.show()
 '''
 
 
+'''
+#HISTOGRAM MATCHING
 
+
+import numpy as np
+from PIL import Image
+import matplotlib.pyplot as plt
+
+# Load the images
+#target_image_path = 'E:/nature.jpg'  # Replace with the path to your target image file
+#reference_image_path = 'E:/mount.jpg'  # Replace with the path to your reference image file
+
+# Open the target and reference images
+target_image = Image.open("r1.jpg").convert('L')  # Convert to grayscale
+reference_image = Image.open("r2.jpeg").convert('L')  # Convert to grayscale
+
+# Convert the images to numpy arrays
+target_array = np.array(target_image)
+reference_array = np.array(reference_image)
+
+# Function to perform histogram matching
+def histogram_matching(target_array, reference_array):
+    # Calculate histograms
+    target_histogram, target_bins = np.histogram(target_array.flatten(), bins=256, range=(0, 256))
+    reference_histogram, reference_bins = np.histogram(reference_array.flatten(), bins=256, range=(0, 256))
+
+    # Calculate cumulative distribution functions (CDFs)
+    target_cdf = np.cumsum(target_histogram).astype(np.float64)
+    target_cdf /= target_cdf[-1]  # Normalize target CDF
+    reference_cdf = np.cumsum(reference_histogram).astype(np.float64)
+    reference_cdf /= reference_cdf[-1]  # Normalize reference CDF
+
+    # Create a lookup table to map target image pixel values to reference image pixel values
+    mapping = np.zeros(256, dtype=np.uint8)
+    j = 0
+    for i in range(256):
+        while reference_cdf[j] < target_cdf[i] and j < 255:
+            j += 1
+        mapping[i] = j
+
+    # Apply the mapping to the target image array
+    matched_array = mapping[target_array]
+    
+    return matched_array
+
+# Perform histogram matching
+matched_array = histogram_matching(target_array, reference_array)
+
+# Convert the matched array back to a Pillow image
+matched_image = Image.fromarray(matched_array)
+
+# Plot histograms before and after matching
+plt.figure(figsize=(12, 6))
+
+# Target image histogram
+plt.subplot(1, 2, 1)
+plt.hist(target_array.ravel(), bins=256, range=(0, 256), color='gray', alpha=0.7)
+plt.title('Target Image Histogram')
+plt.xlabel('Pixel Intensity')
+plt.ylabel('Frequency')
+
+# Matched image histogram
+plt.subplot(1, 2, 2)
+plt.hist(matched_array.ravel(), bins=256, range=(0, 256), color='gray', alpha=0.7)
+plt.title('Matched Image Histogram')
+plt.xlabel('Pixel Intensity')
+plt.ylabel('Frequency')
+
+plt.tight_layout()
+plt.show()
+
+# Display the original target image, reference image, and matched image
+plt.figure(figsize=(12, 6))
+
+plt.subplot(1, 3, 1)
+plt.imshow(target_image, cmap='gray')
+plt.title('Original Target Image')
+plt.axis('off')
+
+plt.subplot(1, 3, 2)
+plt.imshow(reference_image, cmap='gray')
+plt.title('Reference Image')
+plt.axis('off')
+
+plt.subplot(1, 3, 3)
+plt.imshow(matched_image, cmap='gray')
+plt.title('Matched Image')
+plt.axis('off')
+
+plt.tight_layout()
+plt.show()
+
+'''
 
 
 
 
 '''
 
-CONTRAST STRETCHING
+#CONTRAST STRETCHING
 
 import numpy as np
 from PIL import Image
@@ -693,7 +785,7 @@ plt.show()
 
 '''
 
-IMAGE ENHANCEMENT
+#IMAGE ENHANCEMENT
 
 import numpy as np
 from PIL import Image
@@ -799,7 +891,7 @@ NOT DONE!!!!!!!!!!
 
 
 '''
-FOURIER  FFT
+#FOURIER  FFT
 
 import numpy as np
 from PIL import Image
@@ -832,7 +924,7 @@ plt.show()
 
 
 '''
-FOURIER DCT
+#FOURIER DCT
 
 import numpy as np
 from PIL import Image
@@ -860,7 +952,7 @@ plt.show()
 
 
 '''
-CONVOLUTION
+#CONVOLUTION
 
 import numpy as np
 from PIL import Image
@@ -893,7 +985,7 @@ plt.show()
 
 
 '''
-FOURIER FILTERS
+#FOURIER FILTERS
 
 import numpy as np
 from PIL import Image
@@ -1029,7 +1121,7 @@ plt.show()
 
 
 '''
-HISTOGRAM SEGMENTATION
+#HISTOGRAM SEGMENTATION
 
 import numpy as np
 from PIL import Image
@@ -1087,7 +1179,7 @@ plt.show()
 
 
 '''
-CANNY EDGE SEGMENTATION
+#CANNY EDGE SEGMENTATION
 
 import numpy as np
 from PIL import Image
@@ -1128,7 +1220,7 @@ plt.show()
 
 
 '''
-DIFFERENTIAL EQUATION BASED SEGMENTATION
+#DIFFERENTIAL EQUATION BASED SEGMENTATION
 
 import numpy as np
 from PIL import Image
@@ -1169,7 +1261,7 @@ plt.show()
 
 
 '''
-MODEL BASED SEGMENTATION
+#MODEL BASED SEGMENTATION
 
 import numpy as np
 from PIL import Image
@@ -1217,7 +1309,7 @@ plt.show()
 
 
 '''
-NOISE REMOVAL
+#NOISE REMOVAL
 
 from PIL import Image, ImageFilter
 import matplotlib.pyplot as plt
